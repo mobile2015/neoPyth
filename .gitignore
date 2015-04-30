@@ -1,12 +1,18 @@
+# Created by https://www.gitignore.io
+
+### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
+
+.server.log
 
 # C extensions
 *.so
 
 # Distribution / packaging
 .Python
+.idea/
 env/
 build/
 develop-eggs/
@@ -55,3 +61,4 @@ docs/_build/
 
 # PyBuilder
 target/
+

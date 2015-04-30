@@ -1,0 +1,31 @@
+{% extends 'master_template.html' %}
+
+{% block content %}
+    <div class="jumbotron">
+        <h1>Example project</h1>
+        <p>Linking neo4j(py2neo) with flask(flask, flask-cache, flask-bcrypt)! ... and some bootstrap templates</p>
+        <p>Giving YOU! the perfect template for a large flask application</p>
+        <p>
+          <a class="btn btn-lg btn-primary" href="http://bitbucket.com/rikkt0r" role="button">See my other projects/snippets &raquo;</a>
+        </p>
+    </div>
+
+    <div class="row">
+        <h2>Available test links</h2>
+        <ul class="list-group">
+          <li class="list-group-item">
+            <a href="{{ url_for('exampleController.example_index') }}">/example - Show some serialized data</a>
+          </li>
+          <li class="list-group-item">
+            <a href="{{ url_for('exampleController.example_data') }}">/example/data - Show some serialized data</a>
+          </li>
+        </ul>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        setTimeout(function(){$('.jumbotron').append($('<h2>Hello!</h2>'))}, 5000);
+    </script>
+{% endblock %}

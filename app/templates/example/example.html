@@ -1,0 +1,20 @@
+{% extends 'master_template.html' %}
+
+{% block content %}
+    <h2>Example controller !</h2>
+
+    <button id="example_button"> CLICK ME FOR EPIC WIN! </button>
+
+    <ul id="example_list">
+
+    </ul>
+{% endblock %}
+
+{% block scripts %}
+
+    <script src="/static/js/example.js"></script>
+    <script>
+        example.register_events();
+    </script>
+
+{% endblock %}

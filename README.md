@@ -9,12 +9,6 @@
 * coś-4
 * wpiszcie co robicie
 
-
-
-* Python Flask (flask, flask-cache, flask-bcrypt)
-* Neo4J (py2Neo)
-* Large app approach
-
 ### Whats inside
 
 * large app aproach

@@ -3,6 +3,10 @@
 {% block content %}
     <h2>Example controller !</h2>
 
+    {% if reset %}
+        <h2>Zresetowano dane :D!</h2>
+    {% endif %}
+
     <button id="example_button"> CLICK ME FOR EPIC WIN! </button>
 
     <ul id="example_list">

@@ -21,3 +21,11 @@ def example_data():
     current_app.logger.info("[INFO] Downloaded some graph! yay!")
 
     return jsonify(graph.serialize)
+
+@Example.route('/reset')
+def example_reset():
+
+    a = ExampleModel()
+    a.reset_cars()
+
+    return render_template('example/example.html', reset=True)

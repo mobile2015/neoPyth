@@ -37,32 +37,21 @@
 ├── app
 │   ├── controllers
 │   │   ├── exampleController.py
-│   │   ├── exampleController.pyc
 │   │   ├── __init__.py
-│   │   └── __init__.pyc
 │   ├── __init__.py
-│   ├── __init__.pyc
 │   ├── env (never mind that)
 │   ├── models
 │   │   ├── adapters
 │   │   │   ├── graph.py
-│   │   │   ├── graph.pyc
 │   │   │   ├── helpers
 │   │   │   │   ├── edge.py
-│   │   │   │   ├── edge.pyc
 │   │   │   │   ├── __init__.py
-│   │   │   │   ├── __init__.pyc
 │   │   │   │   ├── node.py
-│   │   │   │   └── node.pyc
 │   │   │   ├── __init__.py
-│   │   │   └── __init__.pyc
 │   │   ├── example.py
-│   │   ├── example.pyc
 │   │   ├── __init__.py
-│   │   ├── __init__.pyc
 │   │   ├── reset.py
 │   │   ├── utils.py
-│   │   └── utils.pyc
 │   ├── static
 │   │   ├── css
 │   │   │   ├── bootstrap.min.css

@@ -2,12 +2,9 @@
 
 ## TODO
 
-* ~~szablon aplikacji~~
-* cos-1
+* GW - ~~szablon aplikacji~~
 * GW/KW - Upload zdjęć dla wybranego węzła
-* cos-3
-* coś-4
-* wpiszcie co robicie
+* ?
 
 ### Whats inside
 
@@ -21,8 +18,7 @@
 
 * GW - grzegorz-wojcicki@outlook.com
 * KW - woznyk@agh.edu.pl
-* jeszcze ktos inny
-* i jeszcze inny
+* ?
 
 
 ### Structure
@@ -30,22 +26,22 @@
 ```
 ├── app
 │   ├── controllers
-│   │   ├── exampleController.py
+│   │   ├── example.py
 │   │   ├── __init__.py
+│   │   └── user.py
 │   ├── __init__.py
-│   ├── env (never mind that)
 │   ├── models
 │   │   ├── adapters
 │   │   │   ├── graph.py
 │   │   │   ├── helpers
 │   │   │   │   ├── edge.py
 │   │   │   │   ├── __init__.py
-│   │   │   │   ├── node.py
-│   │   │   ├── __init__.py
+│   │   │   │   └── node.py
+│   │   │   └── __init__.py
 │   │   ├── example.py
+│   │   ├── images.py
 │   │   ├── __init__.py
-│   │   ├── reset.py
-│   │   ├── utils.py
+│   │   └── utils.py
 │   ├── static
 │   │   ├── css
 │   │   │   ├── bootstrap.min.css
@@ -58,14 +54,16 @@
 │   │   │   ├── glyphicons-halflings-regular.woff
 │   │   │   └── glyphicons-halflings-regular.woff2
 │   │   ├── images
-│   │   │   └── favicon.ico
+│   │   │   ├── favicon.ico
+│   │   │   └── uploads
 │   │   └── js
 │   │       ├── bootstrap.js
 │   │       ├── bootstrap.min.js
 │   │       ├── example.js
 │   │       ├── ie10-viewport-bug-workaround.js
 │   │       ├── jquery-1.11.2.min.js
-│   │       └── jquery.tmpl.min.js
+│   │       ├── jquery.tmpl.min.js
+│   │       └── user.js
 │   └── templates
 │       ├── errors
 │       │   ├── error_403.html
@@ -77,10 +75,13 @@
 │       ├── index.html
 │       ├── macros
 │       │   └── import.html
-│       └── master_template.html
-├── authors.txt
+│       ├── master_template.html
+│       └── user
+│           ├── images.html
+│           ├── login.html
+│           └── panel.html
 ├── config.py
-├── config.pyc
+├── LICENSE
 ├── README.md
 ├── requirements.txt
 ├── run.py

@@ -18,6 +18,13 @@
           <li class="list-group-item">
             <a href="{{ url_for('exampleController.example_reset') }}">/example/reset - (Re)set database</a>
           </li>
+
+          <li class="list-group-item"><a href="{{ url_for('userController.user_index') }}">/user/ & /user/panel - User panel</a></li>
+          <li class="list-group-item"><a href="{{ url_for('userController.user_login') }}">/user/login</a></li>
+          <li class="list-group-item"><a href="{{ url_for('userController.user_logout') }}">/user/logout</a></li>
+          <li class="list-group-item"><a href="{{ url_for('userController.user_images') }}">/user/panel/images</a></li>
+
+
         </ul>
     </div>
 

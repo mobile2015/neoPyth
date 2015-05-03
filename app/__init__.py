@@ -59,8 +59,12 @@ def site_map():
             links.append((url, rule.endpoint))
     return jsonify(links)
 
-from app.controllers.exampleController import Example
+from app.controllers.example import Example
 app.register_blueprint(Example, url_prefix='/example')
+
+
+from app.controllers.user import User
+app.register_blueprint(User, url_prefix='/user')
 
 
 app.logger.info("[INFO] App initialized!")

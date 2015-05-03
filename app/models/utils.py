@@ -19,7 +19,7 @@ class Utils:
         @wraps(f)
         def decorated_function(*args, **kwargs):
             if 'user_id' not in session:
-                return redirect(url_for('user.user_login', next=request.url))  # next=request.path
+                return redirect(url_for('userController.user_login', next=request.url))  # next=request.path
             return f(*args, **kwargs)
         return decorated_function
 

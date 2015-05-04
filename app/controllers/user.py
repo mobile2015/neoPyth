@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, render_template, current_app, url_for, redirect, session, request
+from flask import Blueprint, jsonify, render_template, current_app, url_for, redirect, session, request, abort
 from app.models.images import Images
 from app.models.utils import Utils
 
@@ -36,13 +36,34 @@ def user_logout():
 # @Utils.login_required
 def user_images():
 
-    a = Images()
+    img = Images()
+
+    session['user_id'] = 12  # TODO apply real session (remove this line / uncomment @Utils.login_required
 
     if request.method == "POST":
-        # TODO: upload plikow
-        return jsonify({})
+
+        img.save_image(request.files['file'], request.form['node'], session['user_id'])
+        return redirect(url_for('userController.user_images'))
 
     else:
-        # TODO: pobieranie plikow z folderu
 
-        return render_template('user/images.html', images=[])
+        # return render_template('user/images.html', images=img.get_user_images_url(session['user_id']))
+        return render_template('user/images.html', images=["/user/image/12/1234", "/user/image/12/4321"])
+
+
+@User.route('/image/<int:user_id>/<int:node_id>')
+# @Utils.login_required
+def user_image(user_id, node_id):
+
+    session['user_id'] = 12  # TODO apply real session (remove this line / uncomment @Utils.login_required
+
+    if session['user_id'] != user_id:
+        abort(403)
+
+    img = Images()
+
+    # test: http://localhost:5000/user/image/12/1234
+    #  test: http://localhost:5000/user/image/12/4321
+
+    return img.get_user_node_image(session['user_id'], node_id)
+

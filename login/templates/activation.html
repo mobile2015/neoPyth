@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Account Activation</title>
+		<link rel="stylesheet" type="text/css" href="../static/styl.css"> 
+	</head>
+	<body>
+		<form name = "account_activation" method="POST" action="{{ url_for('activate_user') }}">
+			<label>Activation code</label>
+			<input type="text" name="code" maxlength="8" />
+			<button type="submit">Activate account!</button>
+		</form>  
+	</body>
+</html>

@@ -1,11 +1,5 @@
 # neoPython
 
-## TODO
-
-* GW - ~~szablon aplikacji~~
-* GW/KW - Upload zdjęć dla wybranego węzła
-* ?
-
 ### Whats inside
 
 * large app aproach
@@ -13,12 +7,6 @@
 * Neo4J (py2Neo)
 * example controller, model, adapter
 * example jinja templates + bootstrap
-
-### Contact us!
-
-* GW - grzegorz-wojcicki@outlook.com
-* KW - woznyk@agh.edu.pl
-* ?
 
 
 ### Structure
@@ -41,29 +29,21 @@
 │   │   ├── example.py
 │   │   ├── images.py
 │   │   ├── __init__.py
+│   │   ├── user.py
+│   │   ├── users_bartek.py
 │   │   └── utils.py
+│   ├── services
+│   │   ├── __init__.py
+│   │   └── security.py
 │   ├── static
 │   │   ├── css
-│   │   │   ├── bootstrap.min.css
-│   │   │   ├── bootstrap-theme.min.css
-│   │   │   └── style.css
+│   │   │   ├── ...
 │   │   ├── fonts
-│   │   │   ├── glyphicons-halflings-regular.eot
-│   │   │   ├── glyphicons-halflings-regular.svg
-│   │   │   ├── glyphicons-halflings-regular.ttf
-│   │   │   ├── glyphicons-halflings-regular.woff
-│   │   │   └── glyphicons-halflings-regular.woff2
+│   │   │   ├── ...
 │   │   ├── images
-│   │   │   ├── favicon.ico
-│   │   │   └── uploads
+│   │   │   ├── ...
 │   │   └── js
-│   │       ├── bootstrap.js
-│   │       ├── bootstrap.min.js
-│   │       ├── example.js
-│   │       ├── ie10-viewport-bug-workaround.js
-│   │       ├── jquery-1.11.2.min.js
-│   │       ├── jquery.tmpl.min.js
-│   │       └── user.js
+│   │       ├── ...
 │   └── templates
 │       ├── errors
 │       │   ├── error_403.html
@@ -77,16 +57,31 @@
 │       │   └── import.html
 │       ├── master_template.html
 │       └── user
+│           ├── activation.html
 │           ├── images.html
 │           ├── login.html
-│           └── panel.html
+│           ├── panel.html
+│           └── register.html
 ├── config.py
 ├── LICENSE
 ├── README.md
 ├── requirements.txt
 ├── run.py
+├── save-load
+│   ├── addSampleGraph.py
+│   ├── parser.py
+│   ├── removeGraph.py
+│   └── saveGraphToFile.py
 ├── server.log
-└── shell.py
+├── shell.py
+├── tests
+│   ├── __init__.py
+│   └── services
+│       ├── __init__.py
+│       └── security_test.py
+└── uploads
+    ├── 12_1234.png
+    └── 12_4321.jpg
 
 ```
 

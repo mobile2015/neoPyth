@@ -5,19 +5,22 @@
     <div class="row">
 		<form name = "sign_up" method="POST" action="{{ url_for('userController.user_register') }}">
 			<label>First name</label><br/>
-			<input type="text" name="fname" maxlength="254" />
+			<input type="text" name="fname" pattern=".{2,}"  required title="At least 2 characters" maxlength="254" />
 			<br/><br/>
 			<label>Last name</label><br/>
-			<input type="text" name="lname" maxlength="254" />
+			<input type="text" name="lname" pattern=".{2,}" required title="At least 2 characters" maxlength="254" />
 			<br/><br/>
 			<label>E-mail</label><br/>
-			<input type="text" name="email" maxlength="254" />
+			<input type="input" name="email" pattern="^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$" required title="Place e-mail in right format" maxlength="254" />
 			<br/><br/>
 			<label>Login</label><br/>
-			<input type="text" name="login" maxlength="254" />
+			<input type="text" name="login" pattern=".{2,}"  required title="At least 2 characters" maxlength="254" />
 			<br/><br/>
 			<label>Password</label><br/>
-			<input type="password" name="password" maxlength="254" />
+			<input type="password" name="password" id="password" pattern=".{6,}"  required title="At least 6 characters" maxlength="254" />
+			<br/><br/>
+            <label>Confirm password</label><br/>
+			<input type="password" name="password2" id="password2" onkeyup="checkPass(); return false;" />  <span id="confirmMessage" class="confirmMessage"></span>
 			<br/><br/>
 			<button type="submit"> Sign UP </button>
 		</form>
@@ -27,3 +30,8 @@
 {% block scripts %}
 
 {% endblock %}
+
+<script>
+
+
+</script>

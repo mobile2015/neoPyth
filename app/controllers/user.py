@@ -61,6 +61,7 @@ def user_login():
 
 
 @User.route('/logout')
+@login_required
 def user_logout():
     flash("User "+current_user.login+" logged out!")
     logout_user()

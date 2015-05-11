@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, render_template, jsonify, url_for
 from flask.ext.cache import Cache
+from flask.ext.login import LoginManager
 from py2neo import neo4j, authenticate
 from logging.handlers import RotatingFileHandler
 import logging
@@ -17,6 +18,7 @@ app.jinja_env.filters['utf'] = Utils.to_utf8
 authenticate(app.config['NEO4J_HOST'], app.config['NEO4J_USER'], app.config['NEO4J_PASS'])
 db = neo4j.Graph("http://{0}/db/data".format(app.config['NEO4J_HOST']))
 cache = Cache(app=app, config={'CACHE_TYPE': 'simple'})
+login_manager = LoginManager(app)
 
 handler = RotatingFileHandler(app.config['LOGFILE'], maxBytes=4096000, backupCount=1)
 handler.setLevel(logging.INFO)
@@ -58,6 +60,22 @@ def site_map():
             url = url_for(rule.endpoint)
             links.append((url, rule.endpoint))
     return jsonify(links)
+
+
+@login_manager.user_loader
+def user_loader(_login):
+
+    from app.models.user import User as UserModel
+
+    query = 'MATCH (node:User) WHERE node.login = "' + _login + '" RETURN node'
+    for tmp in db.cypher.execute(query):
+        return UserModel(tmp[0])
+    return None
+
+
+def flush_db():
+    db.delete_all()
+
 
 from app.controllers.example import Example
 app.register_blueprint(Example, url_prefix='/example')

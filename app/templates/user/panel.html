@@ -1,14 +1,27 @@
 {% extends 'master_template.html' %}
 
 {% block content %}
-    <h2>User panel !</h2>
+    <h2>User panel - querying</h2>
+
+    <form name = "execute_query" method="POST" action="{{ url_for('userController.user_index') }}">
+        <label for="execute_query">Cypher query</label><br>
+        <textarea id="execute_query" NAME="query" ROWS=10 COLS=100 ></textarea><br>
+        <button type="submit">Execute query </button>
+    </form>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li><b>{{ message }}</b></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
+
 {% endblock %}
 
 {% block scripts %}
 
-    <script src="/static/js/user.js"></script>
-    <script>
-        user.register_events();
-    </script>
+    <script>//put js in here</script>
 
 {% endblock %}

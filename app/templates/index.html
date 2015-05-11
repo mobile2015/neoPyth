@@ -1,10 +1,10 @@
 {% extends 'master_template.html' %}
 
 {% block content %}
-    <div class="jumbotron">
-        <h1>Example project</h1>
-        <p> Bla bla bla, bootstrap </p>
-    </div>
+{#    <div class="jumbotron">#}
+{#        <h1>Example project</h1>#}
+{#        <p> Bla bla bla, bootstrap </p>#}
+{#    </div>#}
 
     <div class="row">
         <h2>Available test links</h2>
@@ -19,19 +19,28 @@
             <a href="{{ url_for('exampleController.example_reset') }}">/example/reset - (Re)set database</a>
           </li>
 
-          <li class="list-group-item"><a href="{{ url_for('userController.user_index') }}">/user/ & /user/panel - User panel</a></li>
+          <li class="list-group-item"><a href="{{ url_for('userController.user_index') }}">/user/ & /user/panel - User panel(cypher queries)</a></li>
           <li class="list-group-item"><a href="{{ url_for('userController.user_login') }}">/user/login</a></li>
           <li class="list-group-item"><a href="{{ url_for('userController.user_logout') }}">/user/logout</a></li>
+          <li class="list-group-item"><a href="{{ url_for('userController.user_register') }}">/user/register</a></li>
           <li class="list-group-item"><a href="{{ url_for('userController.user_images') }}">/user/panel/images</a></li>
-
-
         </ul>
+    </div>
+
+    <div class="row">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <h3><span class="label label-info">Info</span> {{ message }} </h3>
+                {% endfor %}
+            {% endif %}
+         {% endwith %}
     </div>
 
 {% endblock %}
 
 {% block scripts %}
     <script>
-        setTimeout(function(){$('.jumbotron').append($('<h2>Hello!</h2>'))}, 5000);
+{#        setTimeout(function(){$('.jumbotron').append($('<h2>Hello!</h2>'))}, 5000);#}
     </script>
 {% endblock %}

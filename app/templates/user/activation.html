@@ -1,0 +1,16 @@
+{% extends 'master_template.html' %}
+
+{% block content %}
+    <h2>User login !</h2>
+    <div class="row">
+		<form name = "account_activation" method="POST" action="{{ url_for('userController.user_activate') }}">
+			<label>Activation code</label>
+			<input type="text" name="code" maxlength="8" />
+			<button type="submit">Activate account!</button>
+		</form>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import hashlib
+import uuid
+
 __author__ = 'rikkt0r'
 
 import random
@@ -6,22 +9,13 @@ import base64
 from hashlib import md5
 from datetime import datetime
 from functools import wraps
-from flask import redirect, url_for, current_app, request, session
+from flask import redirect, current_app, request
 
 
 class Utils:
 
     def __init__(self):
         pass
-
-    @staticmethod
-    def login_required(f):
-        @wraps(f)
-        def decorated_function(*args, **kwargs):
-            if 'user_id' not in session:
-                return redirect(url_for('userController.user_login', next=request.url))  # next=request.path
-            return f(*args, **kwargs)
-        return decorated_function
 
     @staticmethod
     def ssl_required(fn):
@@ -90,6 +84,16 @@ class Utils:
             seed += alphabet[random.randrange(len(alphabet))]
 
         return seed
+
+    @staticmethod
+    def hash_password(password):
+        salt = uuid.uuid4().hex
+        return hashlib.sha256(salt.encode() + password.encode()).hexdigest() + ':' + salt
+
+    @staticmethod
+    def check_password(hashed_password, user_password):
+        password, salt = hashed_password.split(':')
+        return password == hashlib.sha256(salt.encode() + user_password.encode()).hexdigest()
 
     @staticmethod
     def no_empty_params(rule):

@@ -16,10 +16,6 @@ class Security:
         pass
 
     @staticmethod
-    def create_person(db, person):
-        db.create(person)
-
-    @staticmethod
     def create_permission(db, entity, resource, permissions):
         sec = Relationship(entity, Security.SECURITY, resource, permissions=permissions)
         db.create(sec)

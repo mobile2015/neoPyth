@@ -1,6 +1,16 @@
 {% extends 'master_template.html' %}
 
 {% block content %}
+    <div class="row">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <h3><span class="label label-info">Info</span> {{ message }} </h3><br/><br/>
+                {% endfor %}
+            {% endif %}
+         {% endwith %}
+    </div>
+
     <h2>Register!</h2>
     <div class="row">
 		<form name = "sign_up" method="POST" action="{{ url_for('userController.user_register') }}">
@@ -30,8 +40,3 @@
 {% block scripts %}
 
 {% endblock %}
-
-<script>
-
-
-</script>

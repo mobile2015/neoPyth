@@ -43,12 +43,22 @@ class User(UserMixin):
 
     @staticmethod
     def send_activation_code(_mail, _link):
-        pass
-        '''msg = MIMEText("To activate your account just use this link:   "+_link)
-        msg['Subject'] = 'Mobilne 2015 Activation Code'
-        msg['From'] = "mobilne2015_neo4j_python_project@agh.edu.pl"
-        msg['To'] = _mail
+        import smtplib
+        gmail_user = "neo4j.python@gmail.com"
+        gmail_pwd = "neo4jpyton"
+        FROM = 'neo4j.python@gmail.com'
+        TO = [_mail]
+        SUBJECT = "Neo4j Python Project - account registration"
+        TEXT = "To activate your account just use this registration link: "+_link
 
-        s = smtplib.SMTP('localhost')
-        s.sendmail("mobilne2015_neo4j_python_project@agh.edu.pl", _mail, msg.as_string())
-        s.quit()'''
+        message = """\From: %s\nTo: %s\nSubject: %s\n\n%s
+        """ % (FROM, ", ".join(TO), SUBJECT, TEXT)
+        try:
+            server = smtplib.SMTP("smtp.gmail.com", 587) #or port 465 doesn't seem to work!
+            server.ehlo()
+            server.starttls()
+            server.login(gmail_user, gmail_pwd)
+            server.sendmail(FROM, TO, message)
+            server.close()
+        except:
+            print("Failed to send mail")

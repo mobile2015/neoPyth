@@ -67,9 +67,9 @@ def user_loader(_login):
 
     from app.models.user import User as UserModel
 
-    query = 'MATCH (node:User) WHERE node.login = "' + _login + '" RETURN node'
-    for tmp in db.cypher.execute(query):
-        return UserModel(tmp[0])
+    tmp = db.find_one("User","login",_login)
+    if tmp:
+        return UserModel(tmp)
     return None
 
 

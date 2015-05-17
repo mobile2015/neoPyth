@@ -123,61 +123,40 @@ def user_activate():
         flash("Incomplete or incorrect data!")
     return redirect(url_for('index'))
 
-def send_email():
-            import smtplib
-            gmail_user = "neo4j.python@gmail.com"
-            gmail_pwd = "neo4jpyton"
-            FROM = 'neo4j.python@gmail.com'
-            TO = ['neo4j.python@gmail.com']
-            SUBJECT = "Testing sending using gmail"
-            TEXT = "Testing sending mail using gmail servers"
-
-            # Prepare actual message
-            message = """\From: %s\nTo: %s\nSubject: %s\n\n%s
-            """ % (FROM, ", ".join(TO), SUBJECT, TEXT)
-            try:
-                #server = smtplib.SMTP(SERVER)
-                server = smtplib.SMTP("smtp.gmail.com", 587) #or port 465 doesn't seem to work!
-                server.ehlo()
-                server.starttls()
-                server.login(gmail_user, gmail_pwd)
-                server.sendmail(FROM, TO, message)
-                #server.quit()
-                server.close()
-                print('successfully sent the mail')
-            except:
-                print("failed to send mail")
 
 @User.route('/panel/images', methods=['GET', 'POST'])
-# @Utils.login_required
+@login_required
 def user_images():
     img = Images()
 
-    session['user_id'] = 12  # TODO apply real session (remove this line / uncomment @Utils.login_required
-
     if request.method == "POST":
 
-        img.save_image(request.files['file'], request.form['node'], session['user_id'])
+        img.save_image(request.files['file'], request.form['node'], current_user.login)
         return redirect(url_for('userController.user_images'))
 
     else:
 
-        # return render_template('user/images.html', images=img.get_user_images_url(session['user_id']))
-        return render_template('user/images.html', images=["/user/image/12/1234", "/user/image/12/4321"])
+        return render_template('user/images.html', images=img.get_user_image_urls(current_user.login))
 
 
-@User.route('/image/<int:user_id>/<int:node_id>')
-# @Utils.login_required
-def user_image(user_id, node_id):
-    session['user_id'] = 12  # TODO apply real session (remove this line / uncomment @Utils.login_required
+@User.route('/image/<int:node_id>')
+@User.route('/image/show/<int:node_id>')
+@login_required
+def user_image(node_id):
 
-    if session['user_id'] != user_id:
+    if not current_user.login:
         abort(403)
 
     img = Images()
 
-    # test: http://localhost:5000/user/image/12/1234
-    # test: http://localhost:5000/user/image/12/4321
+    return img.get_user_node_image(current_user.login, node_id)
 
-    return img.get_user_node_image(session['user_id'], node_id)
+@User.route('/image/remove/<int:node_id>')
+@login_required
+def user_image_remove(node_id):
+
+    img = Images()
+    img.remove_image(node_id)
+
+    return redirect(url_for('userController.user_images'))
 

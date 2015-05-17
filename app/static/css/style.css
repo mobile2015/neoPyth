@@ -2,3 +2,8 @@ body {
   min-height: 2000px;
   padding-top: 70px;
 }
+
+#image_list {list-style: none;}
+#image_list li {margin-top: 30px;}
+#image_list li a img {max-height: 300px;}
+#image_list li a span {font-size: 1.4em;}

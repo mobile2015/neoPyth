@@ -23,9 +23,15 @@
     </div>
 
     <div class="row">
-        <ul>
+        <ul id="image_list">
             {% for image in images %}
-            <li><a href="{{ image }}"><img src="{{ image }}" style="max-height: 400px;margin-top: 30px;"></a><span glyphicon glyphicon-remove></span></li>
+                <li>
+                    <a href="/user/image/remove/{{ image['id'] }}">
+                        <span class="glyphicon glyphicon-remove" node_id="{{ image['id'] }}"></span>
+                    </a>
+                    <a href="{{ image['url'] }}"><img src="{{ image['url'] }}"></a>
+
+                </li>
             {% endfor %}
         </ul>
     </div>

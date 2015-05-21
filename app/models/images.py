@@ -49,7 +49,7 @@ class Images:
 
         f = None
         start = self.__file_name_part(user_id, node_id)
-        print start
+        print(start)
 
         for file in os.listdir(self.upload_dir):
             if file.startswith(start):

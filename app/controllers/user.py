@@ -10,11 +10,9 @@ from py2neo import Node
 User = Blueprint('userController', __name__, template_folder='templates', static_folder='static')
 
 
-@User.route('/')
-@User.route('/panel')
+@User.route('/cypher', methods=['GET', 'POST'])
 @login_required
-def user_index():
-
+def user_cypher():
     if request.method == 'GET':
         return render_template('user/panel.html')
     else:
@@ -28,7 +26,7 @@ def user_index():
                 flash(s)
         else:
             flash("No query to execute")
-        return redirect(url_for('userController.user_index'))
+        return redirect(url_for('userController.user_cypher'))
 
 
 @User.route('/login', methods=['GET', 'POST'])
@@ -38,20 +36,23 @@ def user_login():
     else:
         _login = request.form['login']
         _password = request.form['password']
-        tmp = db.find_one("User","login",_login)
+        tmp = db.find_one("USERS","login",_login)
         if tmp:
-            if Utils.check_password(tmp["password"], _password):
-                if tmp["active"] == 1:
-                    login_user(UserModel(tmp))
-                    flash("Welcome " + _login + ". You are logged in!")
-                else:
-                    _mail_content = "localhost:5000" + url_for('userController.user_activate') + '?login=' + _login + '&code=' + \
-                                    tmp["activation_code"]
-                    UserModel.send_activation_code(tmp["email"], _mail_content)
-                    flash("Check your email for activation link. If you are too lazy or "
-                          "used fake e-mail just use this link:   " + _mail_content)
+            if tmp["blocked"] == 1:
+                flash("Permission denied. Your account has been blocked")
             else:
-                flash("Incorrect (incomplete) login or password")
+                if Utils.check_password(tmp["password"], _password):
+                    if tmp["active"] == 1:
+                        login_user(UserModel(tmp))
+                        flash("Welcome " + current_user.login + ". You are logged in!")
+                    else:
+                        _mail_content = "localhost:5000" + url_for('userController.user_activate') + '?login=' + _login + '&code=' + \
+                                        tmp["activation_code"]
+                        send_activation_code(tmp["email"], _mail_content)
+                        flash("Check your email for activation link. If you are too lazy or "
+                              "used fake e-mail just use this link:   " + _mail_content)
+                else:
+                    flash("Incorrect (incomplete) login or password")
         else:
             flash("Incorrect user login")
         return redirect(url_for('index'))
@@ -78,29 +79,29 @@ def user_register():
             _email = request.form['email']
             _login = request.form['login']
             _password = Utils.hash_password(request.form['password'])
-            tmp = db.find_one("User","login",_login)
+            tmp = db.find_one("USERS","login",_login)
             if tmp:
                 print(tmp + "   A")
                 flash("Login exists")
                 return render_template('user/register.html')
             print(tmp)
-            _user = Node("User", first_name=_first_name,
+            _user = Node("USERS", first_name=_first_name,
                          last_name=_last_name,
                          email=_email,
                          login=_login,
                          password=_password,
+                         activation_code=_activation_code,
                          _group="None",
                          active=0,
-                         activation_code=_activation_code
+                         is_admin=0,
+                         blocked=0,
                          )
             db.create(_user)
             _mail_content = "localhost:5000" + url_for(
                 'userController.user_activate') + '?login=' + _login + '&code=' + _activation_code
-            UserModel.send_activation_code(_email, _mail_content)
+            send_activation_code(_email, _mail_content)
             flash(
-                "Check your email for activation link. If you are too lazy or used fake e-mail just use this link: " +
-                "localhost:5000" + url_for('userController.user_activate') + '?login=' + _login + '&code=' + _activation_code
-            )
+                "Check your email for activation link. If you are too lazy or used fake e-mail just use this link:  " + _mail_content)
     else:
         flash("Cant create new account while logged in?")
     return redirect(url_for('index'))
@@ -110,18 +111,81 @@ def user_register():
 def user_activate():
     login = request.args.get('login')
     code = request.args.get('code')
-    tmp = db.find_one("User","login",login)
-    if tmp["active"] == 1:
+    tmp = db.find_one("USERS","login",login)
+    if tmp["blocked"] == 1:
+        flash("Permission denied. Your account has been blocked")
+    elif tmp["active"] == 1:
         flash(login + "your account has already been activated.")
     elif tmp["activation_code"] == code:
-        query = 'MATCH (node:User) where node.login="' + login + '" set node.active=' + str(1)
+        query = 'MATCH (node:USERS) where node.login="' + login + '" set node.active=' + str(1)
         db.cypher.execute(query)
-        query = 'MATCH (node:User) where node.login="' + login + '" remove node.activation_code'
+        query = 'MATCH (node:USERS) where node.login="' + login + '" remove node.activation_code'
         db.cypher.execute(query)
         flash("Congrats " + login + " You have just activated your account.")
     else:
         flash("Incomplete or incorrect data!")
     return redirect(url_for('index'))
+
+
+@User.route('/lock_account', methods=['GET'])
+def lock_account():
+    _login = request.args.get('login')
+    tmp = db.find_one("USERS","login",_login)
+    if tmp:
+        query = 'MATCH (node:USERS) where node.login="' + _login + '" set node.active=' + str(0) + ', node.blocked=' +str(1)
+        db.cypher.execute(query)
+        flash("User blocked successfully")
+    else:
+        flash("User not found")
+    return redirect(url_for('index'))
+
+
+@User.route('/unlock_account', methods=['GET'])
+def unlock_account():
+    _login = request.args.get('login')
+    tmp = db.find_one("USERS","login",_login)
+    if tmp:
+        query = 'MATCH (node:USERS) where node.login="' + _login + '" set node.active=' + str(1) + ', node.blocked=' +str(0)
+        db.cypher.execute(query)
+        flash("User unblocked successfully")
+    else:
+        flash("User not found")
+    return redirect(url_for('index'))
+
+
+@User.route('/remove_user', methods=['GET', 'POST'])
+def remove_user():
+    _login = request.args.get('login')
+    tmp = db.find_one("USERS","login",_login)
+    if tmp:
+        query = 'MATCH (node:USERS) where node.login="' + _login + '" delete node'
+        db.cypher.execute(query)
+        flash("User removed successfully")
+    else:
+        flash("User not found")
+    return redirect(url_for('index'))
+
+
+def send_activation_code(_mail, _link):
+    import smtplib
+    gmail_user = "neo4j.python@gmail.com"
+    gmail_pwd = "neo4jpyton"
+    FROM = 'neo4j.python@gmail.com'
+    TO = [_mail]
+    SUBJECT = "Neo4j Python Project - account registration"
+    TEXT = "To activate your account just use this registration link: "+_link
+
+    message = """\From: %s\nTo: %s\nSubject: %s\n\n%s
+    """ % (FROM, ", ".join(TO), SUBJECT, TEXT)
+    try:
+        server = smtplib.SMTP("smtp.gmail.com", 587) #or port 465 doesn't seem to work!
+        server.ehlo()
+        server.starttls()
+        server.login(gmail_user, gmail_pwd)
+        server.sendmail(FROM, TO, message)
+        server.close()
+    except:
+        print("Failed to send mail")
 
 
 @User.route('/panel/images', methods=['GET', 'POST'])

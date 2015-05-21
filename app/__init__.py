@@ -67,7 +67,7 @@ def user_loader(_login):
 
     from app.models.user import User as UserModel
 
-    tmp = db.find_one("User","login",_login)
+    tmp = db.find_one("USERS","login",_login)
     if tmp:
         return UserModel(tmp)
     return None

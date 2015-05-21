@@ -126,7 +126,7 @@ def user_activate():
         flash("Incomplete or incorrect data!")
     return redirect(url_for('index'))
 
-
+@login_required
 @User.route('/lock_account', methods=['GET'])
 def lock_account():
     _login = request.args.get('login')
@@ -137,9 +137,9 @@ def lock_account():
         flash("User blocked successfully")
     else:
         flash("User not found")
-    return redirect(url_for('index'))
+    return redirect(url_for('userController.admin_panel'))
 
-
+@login_required
 @User.route('/unlock_account', methods=['GET'])
 def unlock_account():
     _login = request.args.get('login')
@@ -150,9 +150,9 @@ def unlock_account():
         flash("User unblocked successfully")
     else:
         flash("User not found")
-    return redirect(url_for('index'))
+    return redirect(url_for('userController.admin_panel'))
 
-
+@login_required
 @User.route('/remove_user', methods=['GET', 'POST'])
 def remove_user():
     _login = request.args.get('login')
@@ -163,8 +163,26 @@ def remove_user():
         flash("User removed successfully")
     else:
         flash("User not found")
-    return redirect(url_for('index'))
+    return redirect(url_for('userController.admin_panel'))
 
+@login_required
+@User.route('/admin_panel', methods=['GET', 'POST'])
+def admin_panel():
+    if request.method == 'GET':
+        query = "MATCH (n) WHERE (n.login IS NOT NULL) RETURN n.first_name, n.last_name, n.login, n.blocked"
+        results = db.cypher.execute(query)
+        list=[]
+        l=[]
+        for i in results:
+            l.append(i[2])
+            l.append(i[0])
+            l.append(i[1])
+            l.append(i[3])
+            list.append(l)
+            l=[]
+        return render_template('user/admin_panel.html',list=list)
+    else:
+        return redirect(url_for('index'))
 
 def send_activation_code(_mail, _link):
     import smtplib

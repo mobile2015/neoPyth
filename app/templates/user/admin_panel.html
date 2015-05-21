@@ -1,0 +1,56 @@
+{% extends 'master_template.html' %}
+
+{% block content %}
+    <h2>Users</h2>
+    <div class="row">
+             <table style="width:100%">
+                <tr>
+                    <th>Delete</th>
+                    <th>Block</th>
+                    <th>Unlock</th>
+                    <th>Login</th>
+                    <th>First name</th>
+                    <th>Last name</th>
+                </tr>
+            {% for i in list %}
+                <tr>
+                    <td>
+                        <form action="{{ url_for('userController.remove_user') }}">
+                            <input type="hidden" name="login" value="{{ i[0] }}">
+                            <input type="submit" value="Delete">
+                        </form>
+                    </td>
+
+                    <td>
+                        {% if i[3] == 0  %}
+                        <form action="{{ url_for('userController.lock_account') }}">
+                            <input type="hidden" name="login" value="{{ i[0] }}">
+                            <input type="submit" value="Lock">
+                        </form>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if i[3] == 1 %}
+                        <form action="{{ url_for('userController.unlock_account') }}">
+                            <input type="hidden" name="login" value="{{ i[0] }}">
+                            <input type="submit" value="Unlock">
+                        </form>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ i[0] }}</td>
+                    <td>{{ i[1] }}</td>
+                    <td>{{ i[2] }}</td>
+                </tr>
+
+            {% endfor %}
+
+            </table><br/>
+
+		</form>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

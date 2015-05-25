@@ -8,6 +8,8 @@
                     <th>Delete</th>
                     <th>Block</th>
                     <th>Unlock</th>
+                    <th>Give admin rights</th>
+                    <th>Take admin rights</th>
                     <th>Login</th>
                     <th>First name</th>
                     <th>Last name</th>
@@ -37,6 +39,22 @@
                         </form>
                         {% endif %}
                     </td>
+                    <td>
+                        {% if i[4] == 0 %}
+                        <form action="{{ url_for('userController.give_admin') }}">
+                            <input type="hidden" name="login" value="{{ i[0] }}">
+                            <input type="submit" value="Grant">
+                        </form>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if i[4] == 1 %}
+                        <form action="{{ url_for('userController.take_admin') }}">
+                            <input type="hidden" name="login" value="{{ i[0] }}">
+                            <input type="submit" value="Revoke">
+                        </form>
+                        {% endif %}
+                    </td>
 
                     <td>{{ i[0] }}</td>
                     <td>{{ i[1] }}</td>
@@ -48,6 +66,16 @@
             </table><br/>
 
 		</form>
+    </div>
+
+    <div class="row">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <h3><span class="label label-info">Info</span> {{ message }} </h3><br/><br/>
+                {% endfor %}
+            {% endif %}
+         {% endwith %}
     </div>
 {% endblock %}
 

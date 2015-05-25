@@ -126,8 +126,8 @@ def user_activate():
         flash("Incomplete or incorrect data!")
     return redirect(url_for('index'))
 
-@login_required
 @User.route('/lock_account', methods=['GET'])
+@login_required
 def lock_account():
     _login = request.args.get('login')
     tmp = db.find_one("USERS","login",_login)
@@ -139,8 +139,8 @@ def lock_account():
         flash("User not found")
     return redirect(url_for('userController.admin_panel'))
 
-@login_required
 @User.route('/unlock_account', methods=['GET'])
+@login_required
 def unlock_account():
     _login = request.args.get('login')
     tmp = db.find_one("USERS","login",_login)
@@ -152,8 +152,8 @@ def unlock_account():
         flash("User not found")
     return redirect(url_for('userController.admin_panel'))
 
-@login_required
 @User.route('/remove_user', methods=['GET', 'POST'])
+@login_required
 def remove_user():
     _login = request.args.get('login')
     tmp = db.find_one("USERS","login",_login)
@@ -165,11 +165,39 @@ def remove_user():
         flash("User not found")
     return redirect(url_for('userController.admin_panel'))
 
+@User.route('/give_admin', methods=['GET', 'POST'])
 @login_required
+def give_admin():
+    _login = request.args.get('login')
+    tmp = db.find_one("USERS","login",_login)
+    if tmp:
+        query = 'MATCH (node:USERS) where node.login="' + _login + '" set node.is_admin=1'
+        db.cypher.execute(query)
+        flash("Admin rights granted")
+    else:
+        flash("User not found")
+    return redirect(url_for('userController.admin_panel'))
+
+
+@User.route('/take_admin', methods=['GET', 'POST'])
+@login_required
+def take_admin():
+    _login = request.args.get('login')
+    tmp = db.find_one("USERS","login",_login)
+    if tmp:
+        query = 'MATCH (node:USERS) where node.login="' + _login + '" set node.is_admin=0'
+        db.cypher.execute(query)
+        flash("User removed successfully")
+    else:
+        flash("Admin rights revoked")
+    return redirect(url_for('userController.admin_panel'))
+
+
 @User.route('/admin_panel', methods=['GET', 'POST'])
+@login_required
 def admin_panel():
     if request.method == 'GET':
-        query = "MATCH (n) WHERE (n.login IS NOT NULL) RETURN n.first_name, n.last_name, n.login, n.blocked"
+        query = "MATCH (n) WHERE (n.login IS NOT NULL) RETURN n.first_name, n.last_name, n.login, n.blocked, n.is_admin"
         results = db.cypher.execute(query)
         list=[]
         l=[]
@@ -178,6 +206,7 @@ def admin_panel():
             l.append(i[0])
             l.append(i[1])
             l.append(i[3])
+            l.append(i[4])
             list.append(l)
             l=[]
         return render_template('user/admin_panel.html',list=list)

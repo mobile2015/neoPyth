@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, render_template, jsonify, url_for
 from flask.ext.cache import Cache
-from flask.ext.login import LoginManager
+from flask.ext.login import LoginManager, current_user
 from py2neo import neo4j, authenticate
 from logging.handlers import RotatingFileHandler
 import logging

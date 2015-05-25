@@ -48,7 +48,9 @@
               <ul class="dropdown-menu" role="menu">
                 <li><a href="/user/login">Sign in</a></li>
                 <li><a href="/user/register">Sign up</a></li>
-                <li><a href="/user/admin_panel">Admin panel</a></li>
+                  {% if current_user.is_admin == 1 %}
+                        <li><a href="/user/admin_panel">Admin panel</a></li>
+                  {% endif %}
 		<li class="divider"></li>
 		<li><a href="/user/cypher">Cypher</a></li>
                 <li class="divider"></li>

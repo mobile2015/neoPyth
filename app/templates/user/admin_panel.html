@@ -8,8 +8,10 @@
                     <th>Delete</th>
                     <th>Block</th>
                     <th>Unlock</th>
+                    {% if sa==1: %}
                     <th>Give admin rights</th>
                     <th>Take admin rights</th>
+                    {% endif %}
                     <th>Login</th>
                     <th>First name</th>
                     <th>Last name</th>
@@ -39,22 +41,26 @@
                         </form>
                         {% endif %}
                     </td>
+                    {% if sa==1 %}
                     <td>
-                        {% if i[4] == 0 %}
+                        {% if i[4]==0 %}
                         <form action="{{ url_for('userController.give_admin') }}">
                             <input type="hidden" name="login" value="{{ i[0] }}">
                             <input type="submit" value="Grant">
                         </form>
                         {% endif %}
                     </td>
+                    {% endif %}
+                    {% if sa==1 %}
                     <td>
-                        {% if i[4] == 1 %}
+                        {% if i[4]==1 %}
                         <form action="{{ url_for('userController.take_admin') }}">
                             <input type="hidden" name="login" value="{{ i[0] }}">
                             <input type="submit" value="Revoke">
                         </form>
                         {% endif %}
                     </td>
+                    {% endif %}
 
                     <td>{{ i[0] }}</td>
                     <td>{{ i[1] }}</td>

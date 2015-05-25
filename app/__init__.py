@@ -24,6 +24,12 @@ handler = RotatingFileHandler(app.config['LOGFILE'], maxBytes=4096000, backupCou
 handler.setLevel(logging.INFO)
 app.logger.addHandler(handler)
 
+admin_usr = db.find_one("USERS","login","admin")
+if admin_usr:
+    db.cypher.execute('MATCH (node:USERS) where node.login="admin" set node.is_admin=1, node.is_superadmin=1')
+else:
+    _password = Utils.hash_password('admin')
+    db.cypher.execute('CREATE (node:USERS { first_name : "Admin", last_name : "Admin", email: "neo4j.python@gmail.com", login: "admin", password: "'+_password+'", is_admin: 1, is_superadmin: 1, blocked: 0, group: "None", active: True})')
 
 # error handlers
 @app.errorhandler(403)

@@ -11,6 +11,7 @@ class User(UserMixin):
         self.login = record["login"]
         self.password = record["password"]
         self.is_admin = record["is_admin"]
+        self.is_superadmin = record["is_superadmin"]
         self.blocked = record["blocked"]
         if record["group"] == "None":
             self.group = None

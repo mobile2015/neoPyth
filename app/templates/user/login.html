@@ -13,6 +13,16 @@
             <button type="submit"> Enter </button>
         </form>
     </div>
+
+    <div class="row">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <h3><span class="label label-info">Info</span> {{ message }} </h3><br/><br/>
+                {% endfor %}
+            {% endif %}
+         {% endwith %}
+    </div>
 {% endblock %}
 
 {% block scripts %}

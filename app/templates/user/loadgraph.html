@@ -1,0 +1,17 @@
+{% extends 'master_template.html' %}
+
+{% block content %}
+    <h2>Load graph from file</h2>
+    <div class="row">
+        <form name = "load" method="POST" action="{{ url_for('userController.user_loadgraph') }}">
+            <label>Choose file</label><br/>
+			<input type="file" name="plik">
+            <br/><br/>
+            <button type="submit"> Enter </button>
+        </form>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

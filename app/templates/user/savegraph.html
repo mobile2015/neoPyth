@@ -1,0 +1,23 @@
+{% extends 'master_template.html' %}
+
+{% block content %}
+    <h2>Save graph to file</h2>
+    <div class="row">
+        <form name = "save" method="POST" action="{{ url_for('userController.user_savegraph') }}">
+            <label>Login</label><br/>
+            <input type="text" name="login" maxlength="254" />
+            <br/><br/>
+            <label>Relation</label><br/>
+            <input type="text" name="relation" />
+            <br/><br/>
+	        <label>Filename</label><br/>
+            <input type="text" name="filename" />
+            <br/><br/>
+            <button type="submit"> Enter </button>
+        </form>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

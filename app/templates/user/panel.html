@@ -6,7 +6,7 @@
     <form name = "execute_query" method="POST" action="{{ url_for('userController.user_cypher') }}">
         <label for="execute_query">Cypher query</label><br>
         <textarea id="execute_query" NAME="query" ROWS=10 COLS=100 ></textarea><br>
-        <button type="submit">Execute query </button>
+        <button type="submit" class="btn btn-primary btn-sm">Execute query </button>
     </form>
     {% with messages = get_flashed_messages() %}
         {% if messages %}

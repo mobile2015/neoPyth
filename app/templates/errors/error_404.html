@@ -1,10 +1,47 @@
 <!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
-    <h1 style="color:red;text-align:center;margin-top: 200px;">404, Not Found, Bitch!</h1>
-</body>
+{% import '/macros/import.html' as import %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/static/images/favicon.ico">
+
+    <title>Theme Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    {{ import.style("bootstrap.min.css") }}
+    {{ import.style("style.css") }}
+    <script src="{{ url_for('static', filename='js/user.js') }}" type="text/javascript" ></script>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+
+    <![endif]-->
+  </head>
+  <body>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="error-template">
+					<h1>
+						Oops!</h1>
+					<h2>
+						404 Not found</h2>
+					<div class="error-details">
+						Sorry, an error has occured.
+					</div>
+					<div class="error-actions">
+						<a href="{{ url_for('exampleController.example_index') }}" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-home"></span>
+							Take Me Home </a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+  </body>
 </html>

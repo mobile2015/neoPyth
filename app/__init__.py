@@ -32,6 +32,10 @@ else:
     db.cypher.execute('CREATE (node:USERS { first_name : "Admin", last_name : "Admin", email: "neo4j.python@gmail.com", login: "admin", password: "'+_password+'", is_admin: 1, is_superadmin: 1, blocked: 0, group: "None", active: True})')
 
 # error handlers
+@app.errorhandler(401)
+def error_401(e):
+    return render_template('errors/error_401.html'), 401
+
 @app.errorhandler(403)
 def error_403(e):
     return render_template('errors/error_403.html'), 403

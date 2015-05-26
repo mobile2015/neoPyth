@@ -5,7 +5,7 @@ from app.models.utils import Utils
 from flask.ext.login import current_user, flash, login_user, login_required, logout_user
 
 from app.models.user import User as UserModel
-from py2neo import Node
+from py2neo import Node, Graph, Relationship
 
 User = Blueprint('userController', __name__, template_folder='templates', static_folder='static')
 
@@ -281,3 +281,102 @@ def user_image_remove(node_id):
 
     return redirect(url_for('userController.user_images'))
 
+@User.route('/savegraph', methods=['GET', 'POST'])
+def user_savegraph():
+    if request.method == 'GET':
+        return render_template('user/savegraph.html')
+    else:
+        usr_name = request.form['login']
+        usr_id = request.form['relation']
+        _filename = request.form['filename']
+
+        graph = Graph()
+        
+        query1 = "MATCH (USERS { login:'"
+        query1 = query1 + usr_name
+        query1 = query1 + "' })-[:"
+        query1 = query1 + usr_id
+        query1 = query1 + "]->(n) RETURN n"
+        results = graph.cypher.execute(query1);
+
+        query2 = "MATCH (USERS { login:'"
+        query2 = query2 + usr_name
+        query2 = query2 + "' })-[:"
+        query2 = query2 + usr_id
+        query2 = query2 + "]->(n)-[r]->(m) RETURN r"
+        results2 = graph.cypher.execute(query2);
+
+        f = open(_filename, 'w')
+
+        f.write(usr_name+"\n")
+        f.write(usr_id+"\n")
+        s = str(results)
+        s2 = str(results2)
+        f.write(s)
+        f.write(s2)
+        f.close()
+        
+        return redirect(url_for('index'))
+
+@User.route('/loadgraph', methods=['GET', 'POST'])
+def user_loadgraph():
+    if request.method == 'GET':
+        return render_template('user/loadgraph.html')
+    else:
+        _file = request.form['plik']
+
+    graph = Graph()
+
+    file = open(_file,'r')
+
+
+    wierzch = 0
+    login = ""
+    relation = ""
+
+    for i,line in enumerate(file):
+            #-------------------------------------------
+            if i == 0:
+                    if line[0] != ' ' or line[0] != '-':
+                            login = line.replace("\n","")
+                    else:
+                            #print ("Can't read user name!")
+                            break
+            #-------------------------------------------	
+            if i == 1:
+                    if line[0] != ' ' or line[0] != '-':
+                            relation = line.replace("\n","")
+                    else:
+                            #print ("Can't read user id!")
+                            break
+            #-------------------------------------------
+            if i > 1:
+                    find_user = graph.cypher.execute("MATCH(n:USERS {login:\"" + login + "\"}) RETURN n")
+                    if len(find_user) != 1:
+                            #print ("User not found")
+                            #graph.cypher.execute("CREATE (n:Person { login :\"" + login + "\", title : 'Developer' })")
+                            break
+            
+                    if line.replace(" ","") == "|n\n":
+                            wierzch = 1
+                            continue
+
+                    #--------------------------------------
+                    if wierzch == 1 and line[0] != '-':
+                            if line.replace(" ","") == "|r\n":
+                                    wierzch = 2
+                                    continue
+                            else:
+                                    graph.cypher.execute("CREATE" + line.split('|')[1])
+                                    graph.cypher.execute("MATCH(n:USERS {login:\"" + login + "\"}),(m" + line.split('|')[1].split()[1] + " CREATE n-[:" + relation + "]->m")
+                    
+                    #---------------------------------------
+                    if wierzch == 2 and line[0] != '-':
+                            if line.replace(" ","") == '':
+                                    wierzch = 0
+                                    continue
+                            else:
+                                    graph.cypher.execute("MATCH(n" + line.split('|')[1].split('-')[0].replace('(','') + ",(m" + line.split('|')[1].split('-')[2].replace('(','').replace('>','') + " CREATE n-[:" + line.split('|')[1].split('-')[1].split(':')[1] + "->m")
+
+    file.close()
+    return redirect(url_for('index'))

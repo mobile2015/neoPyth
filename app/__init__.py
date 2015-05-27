@@ -24,7 +24,7 @@ handler = RotatingFileHandler(app.config['LOGFILE'], maxBytes=4096000, backupCou
 handler.setLevel(logging.INFO)
 app.logger.addHandler(handler)
 
-admin_usr = db.find_one("USERS","login","admin")
+admin_usr = db.find_one("USERS", "login", "admin")
 if admin_usr:
     db.cypher.execute('MATCH (node:USERS) where node.login="admin" set node.is_admin=1, node.is_superadmin=1')
 else:
@@ -77,7 +77,7 @@ def user_loader(_login):
 
     from app.models.user import User as UserModel
 
-    tmp = db.find_one("USERS","login",_login)
+    tmp = db.find_one("USERS", "login", _login)
     if tmp:
         return UserModel(tmp)
     return None

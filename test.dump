@@ -1,0 +1,8 @@
+rikkt0r
+HAS
+   | n                                
+---+-----------------------------------
+ 1 | (n2:TEST {id:1,name:"test test"})
+ 2 | (n3:TEST {id:2,name:"test2"})    
+  | r
+--+---

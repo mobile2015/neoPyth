@@ -1,11 +1,11 @@
 from app import db
-from flask import Blueprint, render_template, url_for, redirect, session, request, abort
+from flask import Blueprint, render_template, url_for, redirect, request, abort
 from app.models.images import Images
 from app.models.utils import Utils
 from flask.ext.login import current_user, flash, login_user, login_required, logout_user
 
 from app.models.user import User as UserModel
-from py2neo import Node, Graph, Relationship
+from py2neo import Node, Graph
 
 User = Blueprint('userController', __name__, template_folder='templates', static_folder='static')
 
@@ -36,8 +36,8 @@ def user_login():
     else:
         _login = request.form['login']
         _password = request.form['password']
-        tmp = db.find_one("USERS","login",_login)
-        if tmp and tmp["login"]=="admin" and Utils.check_password(tmp["password"], _password):
+        tmp = db.find_one("USERS", "login", _login)
+        if tmp and tmp["login"] == "admin" and Utils.check_password(tmp["password"], _password):
             login_user(UserModel(tmp))
             flash("Hello mr. Super Admin! Have a nice day")
         elif tmp:
@@ -50,7 +50,8 @@ def user_login():
                         login_user(UserModel(tmp))
                         flash("Welcome " + current_user.login + ". You are logged in!")
                     else:
-                        _mail_content = "localhost:5000" + url_for('userController.user_activate') + '?login=' + _login + '&code=' + \
+                        _mail_content = "localhost:5000" + url_for(
+                            'userController.user_activate') + '?login=' + _login + '&code=' + \
                                         tmp["activation_code"]
                         send_activation_code(tmp["email"], _mail_content)
                         flash("Check your email for activation link. If you are too lazy or "
@@ -67,7 +68,7 @@ def user_login():
 @User.route('/logout')
 @login_required
 def user_logout():
-    flash("User "+current_user.login+" logged out!")
+    flash("User " + current_user.login + " logged out!")
     logout_user()
     return redirect(url_for('index'))
 
@@ -85,7 +86,7 @@ def user_register():
             _email = request.form['email']
             _login = request.form['login']
             _password = Utils.hash_password(request.form['password'])
-            tmp = db.find_one("USERS","login",_login)
+            tmp = db.find_one("USERS", "login", _login)
             if tmp:
                 print(tmp + "   A")
                 flash("Login exists")
@@ -117,7 +118,7 @@ def user_register():
 def user_activate():
     login = request.args.get('login')
     code = request.args.get('code')
-    tmp = db.find_one("USERS","login",login)
+    tmp = db.find_one("USERS", "login", login)
     if tmp["blocked"] == 1:
         flash("Permission denied. Your account has been blocked")
     elif tmp["active"] == 1:
@@ -137,9 +138,10 @@ def user_activate():
 @login_required
 def lock_account():
     _login = request.args.get('login')
-    tmp = db.find_one("USERS","login",_login)
+    tmp = db.find_one("USERS", "login", _login)
     if tmp:
-        query = 'MATCH (node:USERS) where node.login="' + _login + '" set node.active=' + str(0) + ', node.blocked=' +str(1)
+        query = 'MATCH (node:USERS) where node.login="' + _login + '" set node.active=' + str(
+            0) + ', node.blocked=' + str(1)
         db.cypher.execute(query)
         flash("User blocked successfully")
     else:
@@ -151,9 +153,10 @@ def lock_account():
 @login_required
 def unlock_account():
     _login = request.args.get('login')
-    tmp = db.find_one("USERS","login",_login)
+    tmp = db.find_one("USERS", "login", _login)
     if tmp:
-        query = 'MATCH (node:USERS) where node.login="' + _login + '" set node.active=' + str(1) + ', node.blocked=' +str(0)
+        query = 'MATCH (node:USERS) where node.login="' + _login + '" set node.active=' + str(
+            1) + ', node.blocked=' + str(0)
         db.cypher.execute(query)
         flash("User unblocked successfully")
     else:
@@ -165,7 +168,7 @@ def unlock_account():
 @login_required
 def remove_user():
     _login = request.args.get('login')
-    tmp = db.find_one("USERS","login",_login)
+    tmp = db.find_one("USERS", "login", _login)
     if tmp:
         query = 'MATCH (node:USERS) where node.login="' + _login + '" delete node'
         db.cypher.execute(query)
@@ -179,7 +182,7 @@ def remove_user():
 @login_required
 def give_admin():
     _login = request.args.get('login')
-    tmp = db.find_one("USERS","login",_login)
+    tmp = db.find_one("USERS", "login", _login)
     if tmp:
         query = 'MATCH (node:USERS) where node.login="' + _login + '" set node.is_admin=1'
         db.cypher.execute(query)
@@ -193,7 +196,7 @@ def give_admin():
 @login_required
 def take_admin():
     _login = request.args.get('login')
-    tmp = db.find_one("USERS","login",_login)
+    tmp = db.find_one("USERS", "login", _login)
     if tmp:
         query = 'MATCH (node:USERS) where node.login="' + _login + '" set node.is_admin=0'
         db.cypher.execute(query)
@@ -207,10 +210,10 @@ def take_admin():
 @login_required
 def admin_panel():
     if request.method == 'GET':
-        query = 'MATCH (n) WHERE (n.login IS NOT NULL and n.login <> "'+current_user.login+'" and n.login<>"admin" ) RETURN n.first_name, n.last_name, n.login, n.blocked, n.is_admin'
+        query = 'MATCH (n) WHERE (n.login IS NOT NULL and n.login <> "' + current_user.login + '" and n.login<>"admin" ) RETURN n.first_name, n.last_name, n.login, n.blocked, n.is_admin'
         results = db.cypher.execute(query)
-        list=[]
-        l=[]
+        list = []
+        l = []
         for i in results:
             l.append(i[2])
             l.append(i[0])
@@ -218,24 +221,26 @@ def admin_panel():
             l.append(i[3])
             l.append(i[4])
             list.append(l)
-            l=[]
-        return render_template('user/admin_panel.html',list=list, sa=current_user.is_superadmin)
+            l = []
+        return render_template('user/admin_panel.html', list=list, sa=current_user.is_superadmin)
     else:
         return redirect(url_for('index'))
 
+
 def send_activation_code(_mail, _link):
     import smtplib
+
     gmail_user = "neo4j.python@gmail.com"
     gmail_pwd = "neo4jpyton"
     FROM = 'neo4j.python@gmail.com'
     TO = [_mail]
     SUBJECT = "Neo4j Python Project - account registration"
-    TEXT = "To activate your account just use this registration link: "+_link
+    TEXT = "To activate your account just use this registration link: " + _link
 
     message = """\From: %s\nTo: %s\nSubject: %s\n\n%s
     """ % (FROM, ", ".join(TO), SUBJECT, TEXT)
     try:
-        server = smtplib.SMTP("smtp.gmail.com", 587) #or port 465 doesn't seem to work!
+        server = smtplib.SMTP("smtp.gmail.com", 587)  # or port 465 doesn't seem to work!
         server.ehlo()
         server.starttls()
         server.login(gmail_user, gmail_pwd)
@@ -257,14 +262,21 @@ def user_images():
 
     else:
 
-        return render_template('user/images.html', images=img.get_user_image_urls(current_user.login))
+        login = current_user.login
+
+        available = [
+            a.node_id for a in
+            db.cypher.execute("MATCH (USERS { login:'" + login + "' } )-[:HAS]->(n) RETURN ID(n) as node_id")]
+        return render_template('user/images.html',
+                               images=img.get_user_image_urls(current_user.login),
+                               available=available
+                               )
 
 
 @User.route('/image/<int:node_id>')
 @User.route('/image/show/<int:node_id>')
 @login_required
 def user_image(node_id):
-
     if not current_user.login:
         abort(403)
 
@@ -272,14 +284,15 @@ def user_image(node_id):
 
     return img.get_user_node_image(current_user.login, node_id)
 
+
 @User.route('/image/remove/<int:node_id>')
 @login_required
 def user_image_remove(node_id):
-
     img = Images()
     img.remove_image(node_id)
 
     return redirect(url_for('userController.user_images'))
+
 
 @User.route('/savegraph', methods=['GET', 'POST'])
 def user_savegraph():
@@ -291,32 +304,22 @@ def user_savegraph():
         _filename = request.form['filename']
 
         graph = Graph()
-        
-        query1 = "MATCH (USERS { login:'"
-        query1 = query1 + usr_name
-        query1 = query1 + "' })-[:"
-        query1 = query1 + usr_id
-        query1 = query1 + "]->(n) RETURN n"
-        results = graph.cypher.execute(query1);
 
-        query2 = "MATCH (USERS { login:'"
-        query2 = query2 + usr_name
-        query2 = query2 + "' })-[:"
-        query2 = query2 + usr_id
-        query2 = query2 + "]->(n)-[r]->(m) RETURN r"
-        results2 = graph.cypher.execute(query2);
+        query1 = "MATCH (USERS {{ login:'{0}' }} )-[:{1}]->(n) RETURN n".format(usr_name, usr_id)
+        results = graph.cypher.execute(query1)
 
-        f = open(_filename, 'w')
+        query2 = "MATCH (USERS {{ login:'{0}' }} )-[:{1}]->(n)-[r]->(m) RETURN r".format(usr_name, usr_id)
+        results2 = graph.cypher.execute(query2)
 
-        f.write(usr_name+"\n")
-        f.write(usr_id+"\n")
-        s = str(results)
-        s2 = str(results2)
-        f.write(s)
-        f.write(s2)
-        f.close()
-        
+        with open(_filename, 'w') as f:
+            f.write(usr_name + "\n" + usr_id + "\n")
+            s = str(results)
+            s2 = str(results2)
+            f.write(s)
+            f.write(s2)
+
         return redirect(url_for('index'))
+
 
 @User.route('/loadgraph', methods=['GET', 'POST'])
 def user_loadgraph():
@@ -327,56 +330,59 @@ def user_loadgraph():
 
     graph = Graph()
 
-    file = open(_file,'r')
-
+    file = open(_file, 'r')
 
     wierzch = 0
     login = ""
     relation = ""
 
-    for i,line in enumerate(file):
-            #-------------------------------------------
-            if i == 0:
-                    if line[0] != ' ' or line[0] != '-':
-                            login = line.replace("\n","")
-                    else:
-                            #print ("Can't read user name!")
-                            break
-            #-------------------------------------------	
-            if i == 1:
-                    if line[0] != ' ' or line[0] != '-':
-                            relation = line.replace("\n","")
-                    else:
-                            #print ("Can't read user id!")
-                            break
-            #-------------------------------------------
-            if i > 1:
-                    find_user = graph.cypher.execute("MATCH(n:USERS {login:\"" + login + "\"}) RETURN n")
-                    if len(find_user) != 1:
-                            #print ("User not found")
-                            #graph.cypher.execute("CREATE (n:Person { login :\"" + login + "\", title : 'Developer' })")
-                            break
-            
-                    if line.replace(" ","") == "|n\n":
-                            wierzch = 1
-                            continue
+    for i, line in enumerate(file):
+        # -------------------------------------------
+        if i == 0:
+            if line[0] != ' ' or line[0] != '-':
+                login = line.replace("\n", "")
+            else:
+                # print ("Can't read user name!")
+                break
+        # -------------------------------------------
+        elif i == 1:
+            if line[0] != ' ' or line[0] != '-':
+                relation = line.replace("\n", "")
+            else:
+                # print ("Can't read user id!")
+                break
+        # -------------------------------------------
+        elif i > 1:
+            find_user = graph.cypher.execute("MATCH(n:USERS {login:\"" + login + "\"}) RETURN n")
+            if len(find_user) != 1:
+                # print ("User not found")
+                # graph.cypher.execute("CREATE (n:Person { login :\"" + login + "\", title : 'Developer' })")
+                break
 
-                    #--------------------------------------
-                    if wierzch == 1 and line[0] != '-':
-                            if line.replace(" ","") == "|r\n":
-                                    wierzch = 2
-                                    continue
-                            else:
-                                    graph.cypher.execute("CREATE" + line.split('|')[1])
-                                    graph.cypher.execute("MATCH(n:USERS {login:\"" + login + "\"}),(m" + line.split('|')[1].split()[1] + " CREATE n-[:" + relation + "]->m")
-                    
-                    #---------------------------------------
-                    if wierzch == 2 and line[0] != '-':
-                            if line.replace(" ","") == '':
-                                    wierzch = 0
-                                    continue
-                            else:
-                                    graph.cypher.execute("MATCH(n" + line.split('|')[1].split('-')[0].replace('(','') + ",(m" + line.split('|')[1].split('-')[2].replace('(','').replace('>','') + " CREATE n-[:" + line.split('|')[1].split('-')[1].split(':')[1] + "->m")
+            if line.replace(" ", "") == "|n\n":
+                wierzch = 1
+                continue
+
+            # --------------------------------------
+            if wierzch == 1 and line[0] != '-':
+                if line.replace(" ", "") == "|r\n":
+                    wierzch = 2
+                    continue
+                else:
+                    graph.cypher.execute("CREATE" + line.split('|')[1])
+                    graph.cypher.execute("MATCH(n:USERS {login:\"" + login + "\"}),(m" + line.split('|')[1].split()[
+                        1] + " CREATE n-[:" + relation + "]->m")
+
+            # ---------------------------------------
+            if wierzch == 2 and line[0] != '-':
+                if line.replace(" ", "") == '':
+                    wierzch = 0
+                    continue
+                else:
+                    graph.cypher.execute("MATCH(n" + line.split('|')[1].split('-')[0].replace('(', '') + ",(m" +
+                                         line.split('|')[1].split('-')[2].replace('(', '').replace('>',
+                                                                                                   '') + " CREATE n-[:" +
+                                         line.split('|')[1].split('-')[1].split(':')[1] + "->m")
 
     file.close()
     return redirect(url_for('index'))

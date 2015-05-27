@@ -3,7 +3,7 @@
 ### Whats inside
 
 * large app aproach
-* Flask (flask, flask-cache, flask-bcrypt)
+* Flask (flask, flask-cache)
 * Neo4J (py2Neo)
 * example controller, model, adapter
 * example jinja templates + bootstrap

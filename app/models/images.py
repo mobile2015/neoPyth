@@ -69,7 +69,7 @@ class Images:
         f = []
 
         a = db.cypher.execute(
-            "MATCH (u:User)-[r:HAS]->(n) WHERE HAS(n.image) AND u.login='{}' \
+            "MATCH (u:USERS)-[r:HAS]->(n) WHERE HAS(n.image) AND u.login='{}' \
              RETURN n.image as image, ID(n) as node_id;".format(user_id)
         )
 
@@ -85,7 +85,7 @@ class Images:
     def remove_image(node_id=None):
 
         try:
-            node = db.cypher.execute_one("MATCH (u:User)-[:HAS]->(n) WHERE ID(n) = {} RETURN n".format(node_id))
+            node = db.cypher.execute_one("MATCH (u:USERS)-[:HAS]->(n) WHERE ID(n) = {} RETURN n".format(node_id))
             os.remove(node['image_sys'])
             db.cypher.execute_one("MATCH (n) WHERE ID(n) = {0} REMOVE n.image, n.image_sys RETURN null".format(
                 node_id

@@ -58,7 +58,7 @@ sudo su
 apt-get install apache2 libapache2-mod-wsgi
 a2enmod wsgi
 
-nano /etc/apache2/sites-available
+nano /etc/apache2/sites-available/neopyth.conf
 
     <VirtualHost *:80>
             ServerName example.domain.com
@@ -80,6 +80,7 @@ nano /etc/apache2/sites-available
             CustomLog ${APACHE_LOG_DIR}/access.log combined
     </VirtualHost>
     
+a2ensite neopyth
 
 btw. deploy WSGI is:
 

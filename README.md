@@ -2,11 +2,26 @@
 
 ### Whats inside
 
-* large app aproach
+* large app approach
 * Flask (flask, flask-cache)
 * Neo4J (py2Neo)
 * example controller, model, adapter
-* example jinja templates + bootstrap
+* example jinja2 templates + bootstrap
+
+
+### Functions
+
+#### User
+* Make cypher queries
+* Create node access groups / add other users to groups (API)
+* Upload images and associate them with nodes
+* Import / export graphs
+* Log in, register, activation mail
+
+#### Admin
+* Admins and supervising super-Admin
+* Block and delete users - also grant them admin rights
+
 
 ### Installation
 ```sh
@@ -47,10 +62,8 @@ python2 run.py
 │   │   ├── images.py
 │   │   ├── __init__.py
 │   │   ├── user.py
+│   │   ├── security.py
 │   │   └── utils.py
-│   ├── services
-│   │   ├── __init__.py
-│   │   └── security.py
 │   ├── static
 │   │   ├── css
 │   │   │   ├── ...

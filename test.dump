@@ -1,8 +1,7 @@
-rikkt0r
+rikkt0r2
 HAS
    | n                                
 ---+-----------------------------------
- 1 | (n2:TEST {id:1,name:"test test"})
- 2 | (n3:TEST {id:2,name:"test2"})    
+ 1 | (n41644:TEST {id:1,title:"test"})
   | r
 --+---

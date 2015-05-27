@@ -1,6 +1,17 @@
 {% extends 'master_template.html' %}
 
 {% block content %}
+
+    <div class="row">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <h3><span class="label label-info">Info</span> {{ message }} </h3><br/><br/>
+                {% endfor %}
+            {% endif %}
+         {% endwith %}
+    </div>
+
     <h2>Users</h2>
     <div class="row">
              <table style="width:100%">
@@ -70,18 +81,6 @@
             {% endfor %}
 
             </table><br/>
-
-		</form>
-    </div>
-
-    <div class="row">
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <h3><span class="label label-info">Info</span> {{ message }} </h3><br/><br/>
-                {% endfor %}
-            {% endif %}
-         {% endwith %}
     </div>
 {% endblock %}
 

@@ -1,14 +1,48 @@
 from app import db
-from flask import Blueprint, render_template, url_for, redirect, request, abort
+from flask import Blueprint, render_template, url_for, redirect, request, abort, jsonify
 from app.models.images import Images
 from app.models.utils import Utils
 from flask.ext.login import current_user, flash, login_user, login_required, logout_user
 
 from app.models.user import User as UserModel
 from py2neo import Node, Graph
+import igraph
+import os
 
 User = Blueprint('userController', __name__, template_folder='templates', static_folder='static')
 
+class DrawHelper:
+
+    # @input VertexClustering object
+    # @output JSON
+    def __init__(self, clusters, edges):
+        self.nodes = []
+        self.edges = edges
+
+        for idx, cluster in enumerate(clusters):
+            for node in cluster:
+                # print node.attributes()
+                self.nodes.append({
+                    'id': node,
+                    'name': 'node',
+                    'cluster': idx
+                })
+
+    @property
+    def serialize(self):
+        return {
+            "nodes": [
+                {
+                    "id": n['id'],
+                    "name": n['name'],
+                    "cluster": n['cluster']
+                } for n in self.nodes],
+            "edges": [
+                {
+                    "source": e[0],
+                    "target": e[1]
+                } for e in self.edges],
+        }
 
 @User.route('/cypher', methods=['GET', 'POST'])
 @login_required
@@ -17,16 +51,43 @@ def user_cypher():
         return render_template('user/panel.html')
     else:
         _query = request.form['query']
+
         if _query:
-            result = db.cypher.execute(_query)
+            query_result = db.cypher.execute(_query)
             s = ""
-            if result:
-                for res in result:
+            if query_result:
+                for res in query_result:
                     s = s + str(res[0]) + "\n"
                 flash(s)
+
+            g = igraph.Graph.Erdos_Renyi(50, 0.05, directed=False, loops=False)
+
+            nodes = db.cypher.execute('MATCH (n) return ID(n) AS id')
+            edges = db.cypher.execute('START r=relationship(0) MATCH p=source-[r]->target RETURN Distinct(p)')
+
+            for node in nodes:
+                g.add_vertex(name=str(node.id))
+            for edge in edges:
+                g.add_edge(str(edge.p.start_node), str(edge.p.end_node))
+
+            g = g.as_undirected()
+
+            clusters = g.community_edge_betweenness().as_clustering()
+
+            if not g:
+                dh = {
+                    "nodes": [],
+                    "edges": []
+                }
+            else:
+                dh = DrawHelper(clusters, g.get_edgelist())
+
+            result = jsonify(dh.serialize)
+
         else:
             flash("No query to execute")
-        return redirect(url_for('userController.user_cypher'))
+            
+        return render_template('user/panel.html', result=result)
 
 
 @User.route('/login', methods=['GET', 'POST'])

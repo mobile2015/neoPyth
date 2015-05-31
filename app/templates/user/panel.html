@@ -1,5 +1,17 @@
 {% extends 'master_template.html' %}
 
+<style>
+	#back {
+		position:absolute;
+		top: 10px;
+		left: 20px;
+		z-index: 1000;
+		background-color: #000;
+		color: #FFF;
+		font-size: 2em;
+	}
+</style>
+
 {% block content %}
     <h2>User panel - querying</h2>
 
@@ -8,8 +20,23 @@
         <textarea id="execute_query" NAME="query" ROWS=10 COLS=100 ></textarea><br>
         <button type="submit" class="btn btn-primary btn-sm">Execute query </button>
     </form>
+	
+	<a href="/" id="back"><< Back</a>
+
+	<div class="alchemy" id="alchemy"></div>
+
+	<script type="text/javascript">
+		alchemy.begin({
+			dataSource: "{{result}}",
+			nodeCaption: 'name',
+			nodeMouseOver: 'name',
+			cluster: true,
+			clusterColours: ["#1B9E77","#D95F02","#7570B3","#E7298A","#66A61E","#E6AB02"]
+		})
+	</script>
+	
     {% with messages = get_flashed_messages() %}
-        {% if messages %}
+        {% if messages %}		
         <ul>
             {% for message in messages %}
                 <li><b>{{ message }}</b></li>

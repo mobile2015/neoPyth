@@ -1,4 +1,3 @@
-import json
 from app import db
 from flask import Blueprint, render_template, url_for, redirect, request, abort, jsonify
 from app.models.images import Images
@@ -7,8 +6,6 @@ from flask.ext.login import current_user, flash, login_user, login_required, log
 
 from app.models.user import User as UserModel
 from py2neo import Node, Graph
-import igraph
-import os
 
 User = Blueprint('userController', __name__, template_folder='templates', static_folder='static')
 

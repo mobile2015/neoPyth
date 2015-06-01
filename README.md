@@ -22,6 +22,11 @@
 * Admins and supervising super-Admin
 * Block and delete users - also grant them admin rights
 
+#### Visualization
+
+![Query 1](query_1.png)
+![Query 2](query_2.png)
+
 
 ### Local installation
 ```sh

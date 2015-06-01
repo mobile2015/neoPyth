@@ -1,3 +1,4 @@
+import json
 from app import db
 from flask import Blueprint, render_template, url_for, redirect, request, abort, jsonify
 from app.models.images import Images
@@ -11,38 +12,6 @@ import os
 
 User = Blueprint('userController', __name__, template_folder='templates', static_folder='static')
 
-class DrawHelper:
-
-    # @input VertexClustering object
-    # @output JSON
-    def __init__(self, clusters, edges):
-        self.nodes = []
-        self.edges = edges
-
-        for idx, cluster in enumerate(clusters):
-            for node in cluster:
-                # print node.attributes()
-                self.nodes.append({
-                    'id': node,
-                    'name': 'node',
-                    'cluster': idx
-                })
-
-    @property
-    def serialize(self):
-        return {
-            "nodes": [
-                {
-                    "id": n['id'],
-                    "name": n['name'],
-                    "cluster": n['cluster']
-                } for n in self.nodes],
-            "edges": [
-                {
-                    "source": e[0],
-                    "target": e[1]
-                } for e in self.edges],
-        }
 
 @User.route('/cypher', methods=['GET', 'POST'])
 @login_required
@@ -54,40 +23,42 @@ def user_cypher():
 
         if _query:
             query_result = db.cypher.execute(_query)
-            s = ""
+
             if query_result:
-                for res in query_result:
-                    s = s + str(res[0]) + "\n"
-                flash(s)
 
-            g = igraph.Graph.Erdos_Renyi(50, 0.05, directed=False, loops=False)
+                nodes = []
+                edges = []
 
-            nodes = db.cypher.execute('MATCH (n) return ID(n) AS id')
-            edges = db.cypher.execute('START r=relationship(0) MATCH p=source-[r]->target RETURN Distinct(p)')
+                g = query_result.to_subgraph()
+                print(g.nodes)
+                print(g.relationships)
 
-            for node in nodes:
-                g.add_vertex(name=str(node.id))
-            for edge in edges:
-                g.add_edge(str(edge.p.start_node), str(edge.p.end_node))
+                for node in g.nodes:
+                    nodes.append({
+                        "id": node._id
+                    })
 
-            g = g.as_undirected()
+                for edge in g.relationships:
+                    src, tgt = edge.nodes
+                    edges.append({
+                        "source": src._id,
+                        "target": tgt._id
+                    })
 
-            clusters = g.community_edge_betweenness().as_clustering()
+                # nodes = db.cypher.execute('MATCH (n) return ID(n) AS id')
+                # edges = db.cypher.execute('MATCH (source)-[r]->(target) RETURN ID(source), ID(target)')
 
-            if not g:
-                dh = {
-                    "nodes": [],
-                    "edges": []
+                gph = {
+                    "nodes": nodes,
+                    "edges": edges
                 }
+
             else:
-                dh = DrawHelper(clusters, g.get_edgelist())
+                gph = {"nodes": [], "edges": []}
 
-            result = jsonify(dh.serialize)
-
-        else:
-            flash("No query to execute")
+            return jsonify(gph)
             
-        return render_template('user/panel.html', result=result)
+        return render_template('user/panel.html')
 
 
 @User.route('/login', methods=['GET', 'POST'])

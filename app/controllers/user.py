@@ -32,14 +32,16 @@ def user_cypher():
 
                 for node in g.nodes:
                     nodes.append({
-                        "id": node._id
+                        "id": node._id,
+                        "caption": node["name"]
                     })
 
                 for edge in g.relationships:
                     src, tgt = edge.nodes
                     edges.append({
                         "source": src._id,
-                        "target": tgt._id
+                        "target": tgt._id,
+                        "caption": edge.type
                     })
 
                 # nodes = db.cypher.execute('MATCH (n) return ID(n) AS id')
